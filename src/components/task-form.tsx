@@ -86,8 +86,9 @@ export function TaskForm({ task, onSuccess }: TaskFormProps) {
         toast.success('Task created successfully');
       }
       onSuccess();
-    } catch (error) {
-      toast.error(task ? 'Failed to update task' : 'Failed to create task');
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.detail || error?.message || (task ? 'Failed to update task' : 'Failed to create task');
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

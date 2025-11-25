@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, User, Settings as SettingsIcon } from 'lucide-react';
+import { ArrowLeft, User, Settings as SettingsIcon, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SettingsPage() {
@@ -57,30 +57,38 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <SettingsIcon className="w-5 h-5" />
-                Application Settings
+                Tech Stack
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">Frontend</h3>
-                  <ul className="space-y-2 text-gray-600">
+                  <ul className="space-y-2 text-sm text-gray-600">
                     <li>• Next.js 14 (React Framework)</li>
                     <li>• TypeScript</li>
                     <li>• Tailwind CSS</li>
                     <li>• Zustand (State Management)</li>
-                    <li>• Axios (HTTP Client)</li>
+                    <li>• Framer Motion (Animations)</li>
                     <li>• Radix UI (Component Library)</li>
                   </ul>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">Backend</h3>
-                  <ul className="space-y-2 text-gray-600">
+                  <ul className="space-y-2 text-sm text-gray-600">
                     <li>• FastAPI (Python Framework)</li>
                     <li>• SQLAlchemy (ORM)</li>
                     <li>• PostgreSQL (Database)</li>
                     <li>• JWT (Authentication)</li>
                     <li>• Pydantic (Data Validation)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3">AI Integration</h3>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Google Gemini 1.5 Flash (AI Summaries)</li>
+                    <li>• Smart caching (5-minute cache)</li>
+                    <li>• Auto-invalidation on task updates</li>
                   </ul>
                 </div>
                 <div className="pt-4">
