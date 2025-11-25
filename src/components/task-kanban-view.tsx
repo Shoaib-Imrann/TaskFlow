@@ -8,13 +8,13 @@ import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 
 interface Task {
-  _id: string;
+  _id?: string;
+  id?: string;
   title: string;
-  description: string;
-  estimated_hours: number;
+  description?: string;
   priority: "high" | "medium" | "low";
-  status: "todo" | "in_progress" | "completed";
-  due_date: string;
+  status: string;
+  dueDate?: string;
   category?: string;
 }
 
@@ -34,7 +34,13 @@ export function TaskKanbanView({
   onUpdateTaskStatus,
 }: TaskKanbanViewProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -55,22 +61,22 @@ export function TaskKanbanView({
     // If dropped on another task, find which column that task belongs to
     if (!['todo', 'in_progress', 'completed'].includes(overId)) {
       // Check each column to find where the overId task is
-      if (todoTasks.some(t => t._id === overId)) {
+      if (todoTasks.some(t => (t._id || t.id) === overId)) {
         targetColumn = 'todo';
-      } else if (inProgressTasks.some(t => t._id === overId)) {
+      } else if (inProgressTasks.some(t => (t._id || t.id) === overId)) {
         targetColumn = 'in_progress';
-      } else if (completedTasks.some(t => t._id === overId)) {
+      } else if (completedTasks.some(t => (t._id || t.id) === overId)) {
         targetColumn = 'completed';
       }
     }
 
     // Find which column the task came from
     let sourceColumn = '';
-    if (todoTasks.some(t => t._id === activeId)) {
+    if (todoTasks.some(t => (t._id || t.id) === activeId)) {
       sourceColumn = 'todo';
-    } else if (inProgressTasks.some(t => t._id === activeId)) {
+    } else if (inProgressTasks.some(t => (t._id || t.id) === activeId)) {
       sourceColumn = 'in_progress';
-    } else if (completedTasks.some(t => t._id === activeId)) {
+    } else if (completedTasks.some(t => (t._id || t.id) === activeId)) {
       sourceColumn = 'completed';
     }
 
@@ -81,7 +87,8 @@ export function TaskKanbanView({
   };
 
   const DraggableTaskCard = ({ task }: { task: Task }) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task._id });
+    const taskId = task._id || task.id || '';
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: taskId });
 
     const style = {
       transform: CSS.Transform.toString(transform),
@@ -141,12 +148,14 @@ export function TaskKanbanView({
             {task.category}
           </span>
         )}
-        <span className="text-xs text-gray-500 ml-auto">
-          {new Date(task.due_date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
+        {task.dueDate && (
+          <span className="text-xs text-gray-500 ml-auto">
+            {new Date(task.dueDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -176,10 +185,10 @@ export function TaskKanbanView({
         </div>
       </div>
       <ScrollArea className="h-[calc(100vh-280px)]">
-        <SortableContext items={tasks.map(t => t._id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={tasks.map(t => t._id || t.id || '')} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
             {tasks.map((task) => (
-              <DraggableTaskCard key={task._id} task={task} />
+              <DraggableTaskCard key={task._id || task.id} task={task} />
             ))}
           </div>
         </SortableContext>
@@ -194,7 +203,7 @@ export function TaskKanbanView({
   };
 
   const allTasks = [...todoTasks, ...inProgressTasks, ...completedTasks];
-  const activeTask = activeId ? allTasks.find(t => t._id === activeId) : null;
+  const activeTask = activeId ? allTasks.find(t => (t._id || t.id) === activeId) : null;
 
   return (
     <DndContext
