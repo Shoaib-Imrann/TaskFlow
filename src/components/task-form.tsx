@@ -51,6 +51,10 @@ export function TaskForm({ task, onSuccess }: TaskFormProps) {
       toast.error('Title is required');
       return;
     }
+    if (!formData.category.trim()) {
+      toast.error('Category is required');
+      return;
+    }
     if (!formData.dueDate) {
       toast.error('Due date is required');
       return;
@@ -70,7 +74,7 @@ export function TaskForm({ task, onSuccess }: TaskFormProps) {
       const taskData = {
         ...formData,
         title: formData.title.trim(),
-        category: formData.category || undefined,
+        category: formData.category.trim(),
         dueDate: formData.dueDate || undefined
       };
 
@@ -127,10 +131,9 @@ export function TaskForm({ task, onSuccess }: TaskFormProps) {
           }}
         >
           <SelectTrigger className={showCustomCategory ? 'w-[180px]' : 'w-full'}>
-            <SelectValue placeholder="Category (optional)" />
+            <SelectValue placeholder="Category *" />
           </SelectTrigger>
           <SelectContent className="max-h-[200px]">
-            <SelectItem value="none">No Category</SelectItem>
             <SelectItem value="custom">+ New Category</SelectItem>
             {existingCategories.map(cat => (
               <SelectItem key={cat} value={cat!}>{cat}</SelectItem>

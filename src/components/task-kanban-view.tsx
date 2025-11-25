@@ -105,7 +105,7 @@ export function TaskKanbanView({
 
   const TaskCard = ({ task, attributes, listeners }: { task: Task; attributes?: any; listeners?: any }) => (
     <div
-      className="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow"
       onClick={() => onTaskClick(task)}
     >
       <div className="flex items-start gap-2 mb-2">
@@ -174,12 +174,12 @@ export function TaskKanbanView({
     const { setNodeRef } = useSortable({ id });
 
     return (
-    <div ref={setNodeRef} className="flex-1 min-w-[280px] bg-gray-50 rounded-lg p-4">
+    <div ref={setNodeRef} className="flex-1 min-w-[280px] bg-gray-100 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className={`w-3 h-3 ${color} rounded-full`}></div>
           <h3 className="font-semibold text-gray-900">{title}</h3>
-          <Badge variant="outline" className="rounded-sm">
+          <Badge variant="outline" className="rounded-sm bg-white">
             {tasks.length}
           </Badge>
         </div>

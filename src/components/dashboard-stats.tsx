@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckSquare, Clock, AlertCircle, TrendingUp } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { CheckSquare, Clock, AlertCircle } from 'lucide-react';
 import type { TaskStats } from '@/api/tasks';
 
 interface DashboardStatsProps {
@@ -10,8 +10,6 @@ interface DashboardStatsProps {
 
 export function DashboardStats({ stats }: DashboardStatsProps) {
   if (!stats) return null;
-  
-  const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   const statCards = [
     {
@@ -43,7 +41,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {statCards.map((stat) => (
-        <Card key={stat.title} className="border-gray-200 py-0 gap-0">
+        <Card key={stat.title} className="border-gray-200 py-0 gap-0 shadow-none">
           <CardContent className="p-4 px-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -57,7 +55,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
                   </p>
                 )}
               </div>
-              <div className={`p-2.5 rounded-lg flex-shrink-0 ${stat.color.replace('text-', 'bg-').replace('-600', '-100')}`}>
+              <div className="flex-shrink-0">
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
             </div>

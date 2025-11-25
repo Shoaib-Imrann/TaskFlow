@@ -154,12 +154,12 @@ export function TaskDetailsModal({ task, isOpen, onClose, onEdit, onDelete, allT
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <div className="relative">
+      <div className="relative w-full max-w-2xl">
       <div
-        className="bg-white rounded-lg w-[672px] min-h-[500px] max-h-[80vh] overflow-y-auto p-6"
+        className="bg-white rounded-lg w-full min-h-[500px] max-h-[80vh] overflow-y-auto p-4 md:p-6"
         onClick={(e) => e.stopPropagation()}
       >
     {/* Close button - absolute top right */}
@@ -209,7 +209,7 @@ export function TaskDetailsModal({ task, isOpen, onClose, onEdit, onDelete, allT
           </div>
 
           {/* Properties */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex items-center gap-3">
               <Flag
                 className={cn(

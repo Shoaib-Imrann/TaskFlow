@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth-store';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
-  const { login, signup } = useAuthStore();
+  const { login, signup, token } = useAuthStore();
   const router = useRouter();
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (token) {
+      router.push('/dashboard');
+    }
+  }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +40,11 @@ export default function LoginPage() {
       }
       router.push('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || (isSignup ? 'Signup failed' : 'Login failed'));
+      if (!isSignup && (error.message?.includes('Invalid') || error.message?.includes('not found'))) {
+        toast.error('Account not found. Please sign up first.');
+      } else {
+        toast.error(error.message || (isSignup ? 'Signup failed' : 'Login failed'));
+      }
     } finally {
       setLoading(false);
     }
