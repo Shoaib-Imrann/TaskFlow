@@ -79,7 +79,8 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       }));
       get().fetchStats();
     } catch (error: any) {
-      set({ error: error.message });
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to update task';
+      set({ error: errorMessage });
       throw error;
     }
   },

@@ -6,6 +6,7 @@ import { useAuthStore } from '@/lib/auth-store';
 import { useTasksStore } from '@/lib/tasks-store';
 import { TaskForm } from '@/components/task-form';
 import { DashboardStats } from '@/components/dashboard-stats';
+import { AISummary } from '@/components/ai-summary';
 import { TaskListView } from '@/components/task-list-view';
 import { TaskKanbanView } from '@/components/task-kanban-view';
 import { TaskDetailsModal } from '@/components/task-details-modal';
@@ -119,9 +120,10 @@ export default function DashboardPage() {
       // Update via tasks store API
       await updateTask(taskId, { status: apiStatus });
       toast.success('Task status updated!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating task status:', error);
-      toast.error('Failed to update task status');
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to update task status';
+      toast.error(errorMessage);
     }
   };
 
@@ -168,6 +170,9 @@ export default function DashboardPage() {
       <div className="px-6 md:px-10 py-6">
         {/* Dashboard Stats */}
         <DashboardStats stats={stats} />
+        
+        {/* Floating AI Summary */}
+        <AISummary />
 
         {/* Tasks Section */}
         <div className="mt-8">
