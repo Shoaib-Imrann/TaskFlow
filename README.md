@@ -7,16 +7,16 @@ A modern, full-featured task management application with authentication, multipl
 - **Authentication**: JWT-based login/signup with protected routes
 - **Task Management**: Full CRUD operations with filtering, sorting, and search
 - **Multiple Views**: Kanban board and list view with drag-and-drop
-- **Task Categories**: Work, Personal, Shopping, Health, Finance, Education, Other
-- **Priority Levels**: Low, Medium, High with visual indicators
-- **Status Tracking**: Pending, In Progress, Completed
-- **Dashboard Stats**: Real-time task analytics and completion tracking
-- **Responsive Design**: Mobile-first design that works on all devices
-- **Admin Panel**: User management interface
+- **Task Categories**
+- **Priority Levels**
+- **Status Tracking**
+- **Dashboard Stats**
+- **Responsive Design**
+
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 with App Router and Turbopack
+- **Framework**: Next.js 16 
 - **UI Library**: React 19, TypeScript
 - **Styling**: Tailwind CSS 4, Radix UI primitives
 - **State Management**: Zustand (auth & tasks stores)
@@ -93,45 +93,6 @@ src/
     └── globals.css           # Global styles
 ```
 
-## Key Features
-
-### Authentication
-- JWT token-based authentication
-- Persistent auth state with Zustand + localStorage
-- Protected routes with automatic redirect
-- Token refresh on page reload
-- User profile dropdown with settings
-
-### Task Management
-- **Create**: Title, description, category, priority, due date
-- **Read**: Paginated list with search and filters
-- **Update**: Edit any field, change status via drag-drop
-- **Delete**: Confirmation dialog before deletion
-- **Search**: Real-time search across title and description
-- **Filter**: By category, priority, and status
-- **Sort**: By due date, priority, or creation date
-- **Pagination**: 12 tasks per page
-
-### Views
-- **Kanban Board**: Drag-and-drop between Pending/In Progress/Completed
-- **List View**: Table format with all task details
-- **Toggle**: Switch between views seamlessly
-
-### Dashboard
-- Real-time statistics (total, completed, pending, in-progress)
-- Task cards with priority badges and status indicators
-- Due date countdown with color coding
-- Category-based organization
-- Quick actions (view, edit, delete)
-
-### UI/UX
-- Dark/light mode support
-- Responsive design (mobile, tablet, desktop)
-- Loading states and skeletons
-- Toast notifications for all actions
-- Accessible components (Radix UI)
-- Smooth animations and transitions
-
 ## API Integration
 
 Integrates with FastAPI backend (TaskFlow-api). Endpoints:
@@ -195,13 +156,3 @@ pnpm lint:fix-unsafe  # Fix with unsafe transformations
 |----------|-------------|----------|
 | `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:8000` |
 
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## License
-
-MIT
