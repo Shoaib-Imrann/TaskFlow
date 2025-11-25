@@ -37,8 +37,9 @@ import { getDDMDateString } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 
 interface Task {
-  _id: string;
-  project_id: {
+  _id?: string;
+  id?: string;
+  project_id?: {
     _id: string;
     title: string;
   } | null;
@@ -49,12 +50,12 @@ interface Task {
     profile_pic?: string;
   };
   title: string;
-  description: string;
-  estimated_hours: number;
+  description?: string;
+  estimated_hours?: number;
   priority: "high" | "medium" | "low";
-  status: "todo" | "in_progress" | "testing" | "done" | "completed";
-  due_date: string;
-  created_at: string;
+  status: string;
+  dueDate?: string;
+  createdAt?: string;
   completed_at?: string;
   reworked?: boolean;
   category?: string;
@@ -320,7 +321,7 @@ export function TaskListView({
                         className={cn(
                           "text-xs",
                           (() => {
-                            const dueDate = new Date(task.due_date);
+                            const dueDate = new Date(task.dueDate || '');
                             const today = new Date();
                             const dueDateOnly = new Date(
                               dueDate.getFullYear(),
@@ -350,7 +351,7 @@ export function TaskListView({
                         )}
                       >
                         {(() => {
-                          const dueDate = new Date(task.due_date);
+                          const dueDate = new Date(task.dueDate || '');
                           const today = new Date();
                           const yesterday = new Date(today);
                           yesterday.setDate(today.getDate() - 1);
@@ -404,10 +405,12 @@ export function TaskListView({
                     <TableCell className="w-24 min-w-24 max-w-24 py-1">
                       <div className="flex items-center gap-1.5">
                         <Clock className="w-3 h-3 text-gray-500 flex-shrink-0" />
-                        <CountdownTimer 
-                          dueDate={task.due_date} 
-                          isCompleted={task.status === "completed"}
-                        />
+                        {task.dueDate ? (
+                          <CountdownTimer 
+                            dueDate={task.dueDate} 
+                            isCompleted={task.status === "completed"}
+                          />
+                        ) : '-'}
                       </div>
                     </TableCell>
                   )}
@@ -421,30 +424,22 @@ export function TaskListView({
                               "w-2 h-2 rounded-full",
                               task.status === "completed"
                                 ? "bg-emerald-500"
-                                : task.status === "done"
-                                  ? "bg-green-500"
-                                  : task.status === "testing"
-                                    ? "bg-purple-500"
-                                    : task.status === "in_progress"
-                                      ? "bg-blue-500"
-                                      : "bg-gray-500"
+                                : task.status === "in-progress"
+                                  ? "bg-blue-500"
+                                  : "bg-gray-500"
                             )}
                           ></div>
-                          {task.status === "todo"
+                          {task.status === "pending"
                             ? "To Do"
-                            : task.status === "in_progress"
+                            : task.status === "in-progress"
                               ? "In Progress"
-                              : task.status === "testing"
-                                ? "QA/Testing"
-                                : task.status === "done"
-                                  ? "Done"
-                                  : "Completed"}
+                              : "Completed"}
                         </div>
                       ) : (
                         <Select
                           value={task.status}
                           onValueChange={(value) =>
-                            onUpdateTaskStatus(task._id, value)
+                            onUpdateTaskStatus(task._id || task.id || '', value)
                           }
                         >
                           <SelectTrigger
@@ -458,37 +453,29 @@ export function TaskListView({
                                     "w-2 h-2 rounded-full flex-shrink-0",
                                     task.status === "completed"
                                       ? "bg-emerald-500"
-                                      : task.status === "done"
-                                        ? "bg-green-500"
-                                        : task.status === "testing"
-                                          ? "bg-purple-500"
-                                          : task.status === "in_progress"
-                                            ? "bg-blue-500"
-                                            : "bg-gray-500"
+                                      : task.status === "in-progress"
+                                        ? "bg-blue-500"
+                                        : "bg-gray-500"
                                   )}
                                 ></div>
                                 <span className="truncate">
-                                  {task.status === "todo"
+                                  {task.status === "pending"
                                     ? "To Do"
-                                    : task.status === "in_progress"
+                                    : task.status === "in-progress"
                                       ? "In Progress"
-                                      : task.status === "testing"
-                                        ? "QA/Testing"
-                                        : task.status === "done"
-                                          ? "Done"
-                                          : "Completed"}
+                                      : "Completed"}
                                 </span>
                               </div>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="todo">
+                            <SelectItem value="pending">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                                 To Do
                               </div>
                             </SelectItem>
-                            <SelectItem value="in_progress">
+                            <SelectItem value="in-progress">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                                 In Progress
@@ -537,25 +524,25 @@ export function TaskListView({
                     <ContextMenuItem
                       onClick={(e) => {
                         e.stopPropagation();
-                        onUpdateTaskStatus(task._id, "todo");
+                        onUpdateTaskStatus(task._id || task.id || '', "pending");
                       }}
-                      disabled={task.status === "todo"}
+                      disabled={task.status === "pending"}
                     >
                       Mark as To Do
                     </ContextMenuItem>
                     <ContextMenuItem
                       onClick={(e) => {
                         e.stopPropagation();
-                        onUpdateTaskStatus(task._id, "in_progress");
+                        onUpdateTaskStatus(task._id || task.id || '', "in-progress");
                       }}
-                      disabled={task.status === "in_progress"}
+                      disabled={task.status === "in-progress"}
                     >
                       Mark as In Progress
                     </ContextMenuItem>
                     <ContextMenuItem
                       onClick={(e) => {
                         e.stopPropagation();
-                        onUpdateTaskStatus(task._id, "completed");
+                        onUpdateTaskStatus(task._id || task.id || '', "completed");
                       }}
                       disabled={task.status === "completed"}
                     >

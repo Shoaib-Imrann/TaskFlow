@@ -97,11 +97,10 @@ export default function DashboardPage() {
 
   const handleUpdateTaskStatus = async (taskId: string, newStatus: string) => {
     try {
-      // Map kanban status to API status
+      // Map kanban status to API status if needed
       const statusMap: Record<string, string> = {
         'todo': 'pending',
         'in_progress': 'in-progress',
-        'completed': 'completed'
       };
       
       const apiStatus = statusMap[newStatus] || newStatus;
@@ -410,9 +409,9 @@ export default function DashboardPage() {
             </div>
           ) : viewMode === 'list' ? (
             <TaskListView
-              todoTasks={todoTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'todo' as any, priority: t.priority as any, project_id: null, due_date: t.dueDate, created_at: t.createdAt, category: t.category }))}
-              inProgressTasks={inProgressTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'in_progress' as any, priority: t.priority as any, project_id: null, due_date: t.dueDate, created_at: t.createdAt, category: t.category }))}
-              completedTasks={completedTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'completed' as any, priority: t.priority as any, project_id: null, due_date: t.dueDate, created_at: t.createdAt, category: t.category }))}
+              todoTasks={todoTasks}
+              inProgressTasks={inProgressTasks}
+              completedTasks={completedTasks}
               todoOpen={todoOpen}
               inProgressOpen={inProgressOpen}
               completedOpen={completedOpen}
@@ -441,9 +440,9 @@ export default function DashboardPage() {
             />
           ) : (
             <TaskKanbanView
-              todoTasks={todoTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'todo' as any, priority: t.priority as any, due_date: t.dueDate, category: t.category }))}
-              inProgressTasks={inProgressTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'in_progress' as any, priority: t.priority as any, due_date: t.dueDate, category: t.category }))}
-              completedTasks={completedTasks.map(t => ({ ...t, _id: t._id || t.id, status: 'completed' as any, priority: t.priority as any, due_date: t.dueDate, category: t.category }))}
+              todoTasks={todoTasks}
+              inProgressTasks={inProgressTasks}
+              completedTasks={completedTasks}
               onTaskClick={handleTaskClick}
               onUpdateTaskStatus={handleUpdateTaskStatus}
             />
@@ -491,6 +490,8 @@ export default function DashboardPage() {
             }
           }
         }}
+        allTasks={[...todoTasks, ...inProgressTasks, ...completedTasks]}
+        onNavigateTask={(task) => setSelectedTask(task)}
       />
     </div>
   );
