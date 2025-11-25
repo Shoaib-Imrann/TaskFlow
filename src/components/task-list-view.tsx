@@ -2,7 +2,6 @@ import { ChevronDown, Edit, Eye, Flag, RotateCcw, Trash2, Clock } from "lucide-r
 import { CountdownTimer } from "@/components/countdown-timer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -123,32 +122,14 @@ export function TaskListView({
     tasks: Task[],
     bgColor: string,
     statusColor: string,
-    showCompletedAt: boolean = false
+    showCompletedAt: boolean = false,
+    startIndex: number = 0
   ) => (
     <Table className="w-full">
       <TableHeader>
         <TableRow className={bgColor}>
-          <TableHead className="w-8 min-w-8 max-w-8">
-            <Checkbox
-              checked={(() => {
-                const selectableTasks = tasks.filter(
-                  (task) =>
-                    !( 
-                      currentUser?.role === "employee" &&
-                      task.created_by?._id !== currentUser._id
-                    )
-                );
-                return (
-                  selectableTasks.length > 0 &&
-                  selectableTasks.every((task) =>
-                    selectedTasks.includes(task._id)
-                  )
-                );
-              })()}
-              onCheckedChange={() => {
-                onSelectAllInSection(tasks);
-              }}
-            />
+          <TableHead className="w-12 min-w-12 max-w-12 text-xs">
+            #
           </TableHead>
           {visibleColumns.task && (
             <TableHead className="w-72 min-w-72 max-w-72 text-xs">
@@ -212,26 +193,17 @@ export function TaskListView({
             </TableCell>
           </TableRow>
         ) : (
-          tasks.map((task) => (
+          tasks.map((task, index) => (
             <ContextMenu key={task._id}>
               <ContextMenuTrigger asChild>
                 <TableRow
                   className={`hover:${bgColor} cursor-pointer h-8`}
                   onClick={() => onTaskClick(task)}
                 >
-                  <TableCell className="w-8 min-w-8 max-w-8 py-1">
-                    {!(
-                      currentUser?.role === "employee" &&
-                      task.created_by?._id !== currentUser._id
-                    ) ? (
-                      <Checkbox
-                        checked={selectedTasks.includes(task._id)}
-                        onCheckedChange={() => onTaskSelect(task._id)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <div className="w-4 h-4" />
-                    )}
+                  <TableCell className="w-12 min-w-12 max-w-12 py-1">
+                    <span className="text-xs text-gray-500 font-medium">
+                      {startIndex + index + 1}
+                    </span>
                   </TableCell>
                   {visibleColumns.task && (
                     <TableCell className="w-72 min-w-72 max-w-72 py-1">
@@ -600,7 +572,9 @@ export function TaskListView({
             {renderTaskTable(
               todoTasks,
               "bg-gradient-to-t from-gray-50 to-white",
-              "border-gray-600"
+              "border-gray-600",
+              false,
+              0
             )}
           </div>
         )}
@@ -631,7 +605,9 @@ export function TaskListView({
             {renderTaskTable(
               inProgressTasks,
               "bg-gradient-to-t from-blue-50 to-white",
-              "border-blue-600"
+              "border-blue-600",
+              false,
+              0
             )}
           </div>
         )}
@@ -663,7 +639,8 @@ export function TaskListView({
               completedTasks,
               "bg-gradient-to-t from-gray-50 to-white",
               "border-emerald-600",
-              true
+              true,
+              0
             )}
             {isMyTasksView && doneHasMore && (
               <div className="flex justify-center py-4 border-t">
