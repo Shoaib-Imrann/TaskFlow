@@ -54,14 +54,16 @@ export function DatePicker({ value, onChange, minDate, required }: DatePickerPro
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full justify-start text-left font-normal ${!value && required ? 'border-red-500' : ''}`}
       >
-        <CalendarIcon className="mr-2 h-4 w-4" />
-        {value ? formatDate(value) : required ? 'Pick a date *' : 'Pick a date'}
+        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+        <span className="truncate">
+          {value ? formatDate(value) : required ? 'Pick a date *' : 'Pick a date'}
+        </span>
       </Button>
       
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute left-0 z-50 mt-2 bg-white rounded-lg shadow-lg border p-3 w-64">
+          <div className="absolute right-0 md:left-0 z-50 mt-2 bg-white rounded-lg shadow-lg border p-3 w-72 max-w-[calc(100vw-2rem)]">
             <div className="flex items-center justify-between mb-3">
               <Button type="button" variant="ghost" size="sm" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
@@ -100,7 +102,7 @@ export function DatePicker({ value, onChange, minDate, required }: DatePickerPro
                     onClick={() => handleDateClick(day)}
                     disabled={isDisabled}
                     className={`
-                      h-8 w-8 rounded text-sm
+                      h-8 w-full aspect-square rounded text-sm
                       ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}
                       ${isDisabled ? 'text-gray-300 cursor-not-allowed hover:bg-transparent' : ''}
                     `}

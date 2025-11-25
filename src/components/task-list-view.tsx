@@ -596,7 +596,7 @@ export function TaskListView({
           </div>
         </div>
         {todoOpen && (
-          <div className="bg-white overflow-hidden">
+          <div className="bg-white overflow-hidden rounded-lg border border-gray-200">
             {renderTaskTable(
               todoTasks,
               "bg-gradient-to-t from-gray-50 to-white",
@@ -627,7 +627,7 @@ export function TaskListView({
           </div>
         </div>
         {inProgressOpen && (
-          <div className="bg-white overflow-hidden">
+          <div className="bg-white overflow-hidden rounded-lg border border-gray-200">
             {renderTaskTable(
               inProgressTasks,
               "bg-gradient-to-t from-blue-50 to-white",
@@ -658,7 +658,7 @@ export function TaskListView({
           </div>
         </div>
         {completedOpen && (
-          <div className="bg-white overflow-hidden">
+          <div className="bg-white overflow-hidden rounded-lg border border-gray-200">
             {renderTaskTable(
               completedTasks,
               "bg-gradient-to-t from-gray-50 to-white",

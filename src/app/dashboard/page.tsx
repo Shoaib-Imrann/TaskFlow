@@ -21,7 +21,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 
 export default function DashboardPage() {
-  const { logout, user } = useAuthStore();
+  const { logout, user, token } = useAuthStore();
   const { tasks, total, page, totalPages, stats, loading, fetchTasks, fetchStats, updateTask, deleteTask } = useTasksStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,23 +41,34 @@ export default function DashboardPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const router = useRouter();
 
+  // Protect route - redirect to login if not authenticated
+  useEffect(() => {
+    if (!token) {
+      router.push('/login');
+    }
+  }, [token, router]);
+
   // Fetch stats on mount
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    if (token) {
+      fetchStats();
+    }
+  }, [fetchStats, token]);
 
   // Fetch tasks with filters whenever filters change
   useEffect(() => {
-    fetchTasks({
-      search: searchQuery || undefined,
-      category: filterCategory !== 'all' ? filterCategory : undefined,
-      priority: filterPriority !== 'all' ? filterPriority : undefined,
-      status: filterStatus !== 'all' ? filterStatus : undefined,
-      sort_by: sortBy,
-      page: currentPage,
-      limit: 12
-    });
-  }, [searchQuery, filterCategory, filterPriority, filterStatus, sortBy, currentPage, fetchTasks]);
+    if (token) {
+      fetchTasks({
+        search: searchQuery || undefined,
+        category: filterCategory !== 'all' ? filterCategory : undefined,
+        priority: filterPriority !== 'all' ? filterPriority : undefined,
+        status: filterStatus !== 'all' ? filterStatus : undefined,
+        sort_by: sortBy,
+        page: currentPage,
+        limit: 12
+      });
+    }
+  }, [searchQuery, filterCategory, filterPriority, filterStatus, sortBy, currentPage, fetchTasks, token]);
 
   // Get unique categories from current tasks
   const categories = useMemo(() => {
@@ -114,38 +125,42 @@ export default function DashboardPage() {
     }
   };
 
+  if (!token) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="px-6 md:px-10">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex justify-between items-center py-3">
             <div className="flex items-center gap-2">
               
               <h1 className="text-xl font-semibold text-gray-900">TaskFlow</h1>
             </div>
-            <div className="relative group">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold cursor-pointer hover:bg-blue-700 transition-colors">
-                {user?.email?.charAt(0).toUpperCase()}
-              </div>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="py-1">
-                  <Link href="/admin">
-                    <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                      <Settings className="w-4 h-4" />
-                      Settings
-                    </button>
-                  </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold hover:bg-blue-700 transition-colors">
+                  {user?.email?.charAt(0).toUpperCase()}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-1" align="end">
+                <Link href="/admin">
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 rounded-md">
+                    <Settings className="w-4 h-4" />
+                    Settings
                   </button>
-                </div>
-              </div>
-            </div>
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 rounded-md"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </header>
@@ -159,35 +174,53 @@ export default function DashboardPage() {
           {/* Search and Filters */}
           <div className="flex flex-col md:flex-row gap-3 mb-6 items-center justify-between">
             {/* View Toggle - Left Side */}
-            <div className="flex items-center bg-gray-100 rounded-xl h-10 p-1">
-              <button
-                onClick={() => setViewMode('list')}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 h-8 text-xs font-medium rounded-lg transition-colors",
-                  viewMode === 'list' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
-                )}
-              >
-                <List className="h-3 w-3" />
-                List
-              </button>
-              <button
-                onClick={() => setViewMode('kanban')}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 h-8 text-xs font-medium rounded-lg transition-colors",
-                  viewMode === 'kanban' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
-                )}
-              >
-                <Kanban className="h-3 w-3" />
-                Kanban
-              </button>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="flex items-center bg-gray-100 rounded-xl h-10 p-1 relative">
+                <div
+                  className="absolute h-8 bg-white rounded-lg shadow-sm transition-all duration-300 ease-in-out"
+                  style={{
+                    width: 'calc(50% - 4px)',
+                    left: viewMode === 'list' ? '4px' : 'calc(50%)',
+                  }}
+                />
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 h-8 text-xs font-medium rounded-lg transition-colors relative z-10 flex-1",
+                    viewMode === 'list' ? "text-gray-900" : "text-gray-500"
+                  )}
+                >
+                  <List className="h-3 w-3" />
+                   <span className='hidden md:block'>List</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('kanban')}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 h-8 text-xs font-medium rounded-lg transition-colors relative z-10 flex-1",
+                    viewMode === 'kanban' ? "text-gray-900" : "text-gray-500"
+                  )}
+                >
+                  <Kanban className="h-3 w-3" />
+                  <span className='hidden md:block'>Kanban</span>
+                </button>
+              </div>
+              
+              {/* Search Input - Mobile only */}
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="flex-1 md:hidden h-10 text-sm border-gray-200 rounded-lg bg-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
 
             {/* Right Side - Search and Filters */}
-            <div className="flex gap-3 items-center">
-              {/* Search Button with inline expansion */}
+            <div className="flex gap-3 items-center w-full md:w-auto justify-end">
+              {/* Search with animation - Desktop only */}
               <div
                 className={cn(
-                  "flex items-center transition-all duration-300 ease-in-out",
+                  "hidden md:flex items-center transition-all duration-300 ease-in-out",
                   searchOpen ? "w-64" : "w-10"
                 )}
               >
